@@ -1,8 +1,16 @@
 import { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { Menu, X, MapPin, FileText, Users, Building, Phone, ChevronDown } from "lucide-react";
+import { Menu, X, MapPin, FileText, LogOut, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@/hooks/useAuth";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const navLinks = [
   { name: "Home", href: "/" },
@@ -16,6 +24,7 @@ const navLinks = [
 export function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const { user, signOut, loading } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-card/95 backdrop-blur supports-[backdrop-filter]:bg-card/80">
@@ -57,11 +66,40 @@ export function Navbar() {
               Verify Document
             </Button>
           </Link>
-          <Link to="/auth/login">
-            <Button variant="default" size="sm">
-              Sign In
-            </Button>
-          </Link>
+          
+          {loading ? (
+            <div className="h-9 w-20 bg-muted animate-pulse rounded-md" />
+          ) : user ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="gap-2">
+                  <User className="h-4 w-4" />
+                  <span className="hidden sm:inline max-w-24 truncate">
+                    {user.email?.split("@")[0]}
+                  </span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-48">
+                <DropdownMenuItem asChild>
+                  <Link to="/surveyors" className="cursor-pointer">
+                    <User className="h-4 w-4 mr-2" />
+                    Dashboard
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={signOut} className="cursor-pointer text-destructive">
+                  <LogOut className="h-4 w-4 mr-2" />
+                  Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <Link to="/auth/login">
+              <Button variant="default" size="sm">
+                Sign In
+              </Button>
+            </Link>
+          )}
 
           {/* Mobile Menu Toggle */}
           <button
@@ -98,6 +136,12 @@ export function Navbar() {
                 Verify Document
               </Button>
             </Link>
+            {user && (
+              <Button variant="ghost" className="w-full mt-2 text-destructive" onClick={() => { signOut(); setIsOpen(false); }}>
+                <LogOut className="h-4 w-4 mr-2" />
+                Sign Out
+              </Button>
+            )}
           </nav>
         </div>
       )}
