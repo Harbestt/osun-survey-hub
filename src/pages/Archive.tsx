@@ -128,16 +128,16 @@ const Archive = () => {
               </div>
               <div className="divide-y divide-border">
                 {filteredDocuments.map((doc) => (
-                  <div key={doc.id} className="p-5 hover:bg-muted/30 transition-colors">
-                    <div className="flex items-start justify-between">
-                      <div className="flex items-start gap-4">
-                        <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10">
-                          <FileText className="h-6 w-6 text-primary" />
+                  <div key={doc.id} className="p-4 md:p-5 hover:bg-muted/30 transition-colors">
+                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4">
+                      <div className="flex items-start gap-3 md:gap-4">
+                        <div className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-lg bg-primary/10 shrink-0">
+                          <FileText className="h-5 w-5 md:h-6 md:w-6 text-primary" />
                         </div>
-                        <div>
-                          <h3 className="font-semibold text-foreground">{doc.title}</h3>
-                          <p className="text-sm text-muted-foreground mt-1">{doc.id}</p>
-                          <div className="flex flex-wrap items-center gap-4 mt-2 text-sm text-muted-foreground">
+                        <div className="min-w-0 flex-1">
+                          <h3 className="font-semibold text-foreground text-sm md:text-base truncate">{doc.title}</h3>
+                          <p className="text-xs md:text-sm text-muted-foreground mt-1">{doc.id}</p>
+                          <div className="flex flex-wrap items-center gap-2 md:gap-4 mt-2 text-xs md:text-sm text-muted-foreground">
                             <span className="flex items-center gap-1">
                               <Calendar className="h-3 w-3" />
                               {doc.date}
@@ -146,23 +146,25 @@ const Archive = () => {
                               <MapPin className="h-3 w-3" />
                               {doc.lga}
                             </span>
-                            <span className="flex items-center gap-1">
+                            <span className="flex items-center gap-1 hidden sm:flex">
                               <User className="h-3 w-3" />
                               {doc.surveyor}
                             </span>
                           </div>
                         </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <span className="px-2.5 py-0.5 bg-muted text-muted-foreground text-xs rounded-full">
+                      <div className="flex items-center justify-between sm:justify-end gap-2 pl-13 sm:pl-0">
+                        <span className="px-2 py-0.5 bg-muted text-muted-foreground text-xs rounded-full">
                           {doc.type}
                         </span>
-                        <Button variant="ghost" size="icon" onClick={() => setSelectedDocument(doc)}>
-                          <Eye className="h-4 w-4" />
-                        </Button>
-                        <Button variant="ghost" size="icon">
-                          <Download className="h-4 w-4" />
-                        </Button>
+                        <div className="flex items-center gap-1">
+                          <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setSelectedDocument(doc)}>
+                            <Eye className="h-4 w-4" />
+                          </Button>
+                          <Button variant="ghost" size="icon" className="h-8 w-8">
+                            <Download className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </div>
