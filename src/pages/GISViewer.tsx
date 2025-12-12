@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Layers, Search, ZoomIn, ZoomOut, Locate, Ruler, Download, Info } from "lucide-react";
+import { Layers, Search, ZoomIn, ZoomOut, Locate, Ruler, Download, Info, X } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -87,22 +87,25 @@ const GISViewer = () => {
 
         {/* Layer Panel */}
         {showLayers && (
-          <div className="absolute top-20 left-4 w-64 bg-card/95 backdrop-blur rounded-xl border border-border shadow-lg z-10 animate-scale-in">
-            <div className="p-4 border-b border-border">
-              <h3 className="font-semibold text-foreground flex items-center gap-2">
+          <div className="absolute top-16 md:top-20 left-4 right-4 md:right-auto md:w-64 bg-card/95 backdrop-blur rounded-xl border border-border shadow-lg z-10 animate-scale-in">
+            <div className="p-3 md:p-4 border-b border-border flex items-center justify-between">
+              <h3 className="font-semibold text-foreground text-sm md:text-base flex items-center gap-2">
                 <Layers className="h-4 w-4" />
                 Map Layers
               </h3>
+              <button onClick={() => setShowLayers(false)} className="md:hidden text-muted-foreground">
+                <X className="h-4 w-4" />
+              </button>
             </div>
-            <div className="p-4 space-y-3">
+            <div className="p-3 md:p-4 grid grid-cols-2 md:grid-cols-1 gap-2 md:gap-3">
               {layers.map((layer, index) => (
-                <div key={layer.id} className="flex items-center gap-3">
+                <div key={layer.id} className="flex items-center gap-2 md:gap-3">
                   <Checkbox
                     id={layer.id}
                     checked={activeLayers[index]}
                     onCheckedChange={() => toggleLayer(index)}
                   />
-                  <Label htmlFor={layer.id} className="text-sm cursor-pointer">
+                  <Label htmlFor={layer.id} className="text-xs md:text-sm cursor-pointer">
                     {layer.name}
                   </Label>
                 </div>
@@ -136,15 +139,15 @@ const GISViewer = () => {
         </div>
 
         {/* Coordinate Display */}
-        <div className="absolute bottom-4 left-4 px-4 py-2 bg-card/95 backdrop-blur rounded-lg border border-border shadow-lg z-10">
+        <div className="absolute bottom-20 md:bottom-4 left-4 px-3 py-2 bg-card/95 backdrop-blur rounded-lg border border-border shadow-lg z-10">
           <p className="text-xs text-muted-foreground">Cursor Position</p>
-          <p className="text-sm font-mono text-foreground">
+          <p className="text-xs md:text-sm font-mono text-foreground">
             {coordinates.lat}°N, {coordinates.lng}°E
           </p>
         </div>
 
-        {/* Legend */}
-        <div className="absolute bottom-4 right-4 p-4 bg-card/95 backdrop-blur rounded-lg border border-border shadow-lg z-10">
+        {/* Legend - Hidden on mobile, visible on larger screens */}
+        <div className="absolute bottom-20 md:bottom-4 right-4 p-3 md:p-4 bg-card/95 backdrop-blur rounded-lg border border-border shadow-lg z-10 hidden sm:block">
           <h4 className="text-xs font-medium text-muted-foreground mb-2">Legend</h4>
           <div className="space-y-2">
             <div className="flex items-center gap-2">
@@ -163,13 +166,13 @@ const GISViewer = () => {
         </div>
 
         {/* Actions Bar */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-10">
-          <Button variant="secondary" className="bg-card/95 backdrop-blur shadow-lg">
-            <Download className="h-4 w-4 mr-2" />
-            Export Map
+        <div className="absolute bottom-4 left-4 right-4 md:left-1/2 md:right-auto md:-translate-x-1/2 flex gap-2 z-10">
+          <Button variant="secondary" size="sm" className="flex-1 md:flex-none bg-card/95 backdrop-blur shadow-lg text-xs md:text-sm">
+            <Download className="h-4 w-4 mr-1 md:mr-2" />
+            Export
           </Button>
-          <Button variant="secondary" className="bg-card/95 backdrop-blur shadow-lg">
-            <Info className="h-4 w-4 mr-2" />
+          <Button variant="secondary" size="sm" className="flex-1 md:flex-none bg-card/95 backdrop-blur shadow-lg text-xs md:text-sm">
+            <Info className="h-4 w-4 mr-1 md:mr-2" />
             Print
           </Button>
         </div>

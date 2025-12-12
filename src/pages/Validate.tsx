@@ -140,44 +140,44 @@ const Validate = () => {
                     )}
                   </div>
 
-                  {result.isValid && (
+                    {result.isValid && (
                     <div className="grid gap-4 mt-6 pt-6 border-t border-emerald-200">
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="flex items-start gap-3">
-                          <FileText className="h-4 w-4 text-emerald-600 mt-0.5" />
-                          <div>
+                          <FileText className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
+                          <div className="min-w-0">
                             <p className="text-xs text-emerald-600">Document Number</p>
-                            <p className="font-medium text-emerald-800">{result.documentNumber}</p>
+                            <p className="font-medium text-emerald-800 text-sm break-all">{result.documentNumber}</p>
                           </div>
                         </div>
                         <div className="flex items-start gap-3">
-                          <Calendar className="h-4 w-4 text-emerald-600 mt-0.5" />
+                          <Calendar className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
                           <div>
                             <p className="text-xs text-emerald-600">Issue Date</p>
-                            <p className="font-medium text-emerald-800">{result.issueDate}</p>
+                            <p className="font-medium text-emerald-800 text-sm">{result.issueDate}</p>
                           </div>
                         </div>
                       </div>
                       <div className="flex items-start gap-3">
-                        <MapPin className="h-4 w-4 text-emerald-600 mt-0.5" />
+                        <MapPin className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
                         <div>
                           <p className="text-xs text-emerald-600">Property Location</p>
-                          <p className="font-medium text-emerald-800">{result.propertyLocation}</p>
+                          <p className="font-medium text-emerald-800 text-sm">{result.propertyLocation}</p>
                         </div>
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="flex items-start gap-3">
-                          <User className="h-4 w-4 text-emerald-600 mt-0.5" />
+                          <User className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
                           <div>
                             <p className="text-xs text-emerald-600">Owner</p>
-                            <p className="font-medium text-emerald-800">{result.ownerName}</p>
+                            <p className="font-medium text-emerald-800 text-sm">{result.ownerName}</p>
                           </div>
                         </div>
                         <div className="flex items-start gap-3">
-                          <User className="h-4 w-4 text-emerald-600 mt-0.5" />
+                          <User className="h-4 w-4 text-emerald-600 mt-0.5 shrink-0" />
                           <div>
                             <p className="text-xs text-emerald-600">Surveyor</p>
-                            <p className="font-medium text-emerald-800">{result.surveyorName}</p>
+                            <p className="font-medium text-emerald-800 text-sm">{result.surveyorName}</p>
                           </div>
                         </div>
                       </div>
