@@ -1,32 +1,69 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
-import { Eye, EyeOff, MapPin, Mail, Lock, User, Phone, Building } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { Eye, EyeOff, MapPin, Mail, Lock, User, Loader2, Building } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { useAuth } from "@/hooks/useAuth";
+import { z } from "zod";
+
+const registerSchema = z.object({
+  fullName: z.string().min(2, "Name must be at least 2 characters").max(100),
+  email: z.string().email("Please enter a valid email address").max(255),
+  password: z.string().min(6, "Password must be at least 6 characters"),
+  confirmPassword: z.string(),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Passwords don't match",
+  path: ["confirmPassword"],
+});
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    phone: "",
-    password: "",
-    userType: "",
-    acceptTerms: false,
-  });
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [agreeTerms, setAgreeTerms] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState<Record<string, string>>({});
+  
+  const { signUp, user } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (user) {
+      navigate("/");
+    }
+  }, [user, navigate]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(formData);
+    setErrors({});
+    
+    if (!agreeTerms) {
+      setErrors({ terms: "You must agree to the terms and conditions" });
+      return;
+    }
+    
+    // Validate input
+    const result = registerSchema.safeParse({ fullName, email, password, confirmPassword });
+    if (!result.success) {
+      const fieldErrors: Record<string, string> = {};
+      result.error.errors.forEach((err) => {
+        fieldErrors[err.path[0] as string] = err.message;
+      });
+      setErrors(fieldErrors);
+      return;
+    }
+    
+    setIsLoading(true);
+    const { error } = await signUp(email, password, fullName);
+    setIsLoading(false);
+    
+    if (!error) {
+      navigate("/auth/login");
+    }
   };
 
   return (
@@ -38,11 +75,11 @@ const Register = () => {
             <MapPin className="h-12 w-12 text-primary-foreground" />
           </div>
           <h2 className="font-display text-3xl font-bold text-primary-foreground mb-4">
-            Join Our Digital Platform
+            Join the Digital Revolution
           </h2>
           <p className="text-primary-foreground/80">
-            Create an account to access all survey services, submit applications, 
-            and track your requests online.
+            Create an account to access all land survey services, track your applications, 
+            and manage your documentation online.
           </p>
           
           <div className="mt-12 grid grid-cols-2 gap-6 text-left">
@@ -61,7 +98,7 @@ const Register = () => {
       </div>
 
       {/* Right Panel - Form */}
-      <div className="flex-1 flex items-center justify-center p-8">
+      <div className="flex-1 flex items-center justify-center p-6 md:p-8 overflow-y-auto">
         <div className="w-full max-w-md">
           {/* Logo */}
           <Link to="/" className="flex items-center gap-3 mb-8">
@@ -78,7 +115,7 @@ const Register = () => {
             Create Account
           </h1>
           <p className="text-muted-foreground mb-8">
-            Fill in your details to get started with our services.
+            Fill in your details to create a new account.
           </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -88,13 +125,15 @@ const Register = () => {
                 <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   id="fullName"
-                  placeholder="John Doe"
-                  value={formData.fullName}
-                  onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                  type="text"
+                  placeholder="Your full name"
+                  value={fullName}
+                  onChange={(e) => setFullName(e.target.value)}
                   className="pl-10"
                   required
                 />
               </div>
+              {errors.fullName && <p className="text-sm text-destructive">{errors.fullName}</p>}
             </div>
 
             <div className="space-y-2">
@@ -105,45 +144,13 @@ const Register = () => {
                   id="email"
                   type="email"
                   placeholder="you@example.com"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="pl-10"
                   required
                 />
               </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="phone">Phone Number</Label>
-              <div className="relative">
-                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="phone"
-                  type="tel"
-                  placeholder="+234 803 XXX XXXX"
-                  value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                  className="pl-10"
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="userType">Account Type</Label>
-              <Select
-                value={formData.userType}
-                onValueChange={(value) => setFormData({ ...formData, userType: value })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select account type" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="public">Public User</SelectItem>
-                  <SelectItem value="surveyor">Registered Surveyor</SelectItem>
-                  <SelectItem value="government">Government Official</SelectItem>
-                </SelectContent>
-              </Select>
+              {errors.email && <p className="text-sm text-destructive">{errors.email}</p>}
             </div>
 
             <div className="space-y-2">
@@ -154,8 +161,8 @@ const Register = () => {
                   id="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="••••••••"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="pl-10 pr-10"
                   required
                 />
@@ -167,15 +174,34 @@ const Register = () => {
                   {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
+              {errors.password && <p className="text-sm text-destructive">{errors.password}</p>}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="confirmPassword">Confirm Password</Label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="confirmPassword"
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  className="pl-10"
+                  required
+                />
+              </div>
+              {errors.confirmPassword && <p className="text-sm text-destructive">{errors.confirmPassword}</p>}
             </div>
 
             <div className="flex items-start gap-2 pt-2">
-              <Checkbox
-                id="terms"
-                checked={formData.acceptTerms}
-                onCheckedChange={(checked) => setFormData({ ...formData, acceptTerms: checked as boolean })}
+              <Checkbox 
+                id="terms" 
+                checked={agreeTerms}
+                onCheckedChange={(checked) => setAgreeTerms(checked as boolean)}
+                className="mt-0.5"
               />
-              <Label htmlFor="terms" className="text-sm font-normal cursor-pointer leading-tight">
+              <Label htmlFor="terms" className="text-sm font-normal cursor-pointer leading-relaxed">
                 I agree to the{" "}
                 <Link to="/terms" className="text-primary hover:underline">
                   Terms of Service
@@ -186,9 +212,17 @@ const Register = () => {
                 </Link>
               </Label>
             </div>
+            {errors.terms && <p className="text-sm text-destructive">{errors.terms}</p>}
 
-            <Button type="submit" className="w-full" size="lg">
-              Create Account
+            <Button type="submit" className="w-full" size="lg" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                  Creating account...
+                </>
+              ) : (
+                "Create Account"
+              )}
             </Button>
           </form>
 
